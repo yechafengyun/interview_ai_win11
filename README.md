@@ -69,6 +69,14 @@ This tool is based on Windows LiveCaptions, which is available since Windows 11 
 
 > 配置和使用过程中生成的 `config.json` 会自动保存在exe同目录下。
 
+
+### 运行
+1. 点击Setting，配置API Key和Base URL
+![Setting](./.doc/截图.png)
+2. 按下快捷键开始录音（默认Ctrl+[）或截图（默认Ctrl+\）
+3. 等待AI回复
+
+
 ---
 
 ## 赞赏
