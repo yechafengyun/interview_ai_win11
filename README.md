@@ -56,7 +56,7 @@ This tool is based on Windows LiveCaptions, which is available since Windows 11 
 
 ### 方式二：直接运行打包好的exe（推荐普通用户）
 
-1. 进入 [Releases](https://github.com/yechafengyun/interview_ai_wind11/releases) 页面，下载最新的 `main.exe`。
+1. 进入 [Releases](https://github.com/yechafengyun/interview_ai_win11/releases) 页面，下载最新的 [`main.exe`](https://github.com/yechafengyun/interview_ai_win11/releases/download/exe/main.exe)。
 2. 双击 `main.exe` 即可直接运行，无需安装Python环境。
 
 > 配置和使用过程中生成的 `config.json` 会自动保存在exe同目录下。
