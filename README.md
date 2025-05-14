@@ -10,6 +10,7 @@ This tool is based on Windows LiveCaptions, which is available since Windows 11 
 - **实时语音转文字**：借助Windows11自带实时字幕软件（Live Captions）自动抓取对话，可配置语言，是否包含麦克风音频等，相比其他开源面试AI，不需要再手动安装音频捕获软件以及音频识别API
 - **AI自动答题**：集成多种大模型（如qwen-turbo、deepseek等），支持多语言（中文/日语/英文）自动生成高质量答案。
 - **快捷键设置**：默认使用`Ctrl+[`触发对话回答，默认使用`Ctrl+\`触发截屏Coding题解答
+    - ⚠️**注意截图优先从剪贴板读取，如果要自动截图需要保证剪贴板第一个非图片**
 - **自定义配置**：支持自定义API Key、模型、提示词、热键等，满足个性化需求。
     - prompt设置建议保留其中的`{language}`文本
 
