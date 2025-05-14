@@ -1,0 +1,90 @@
+# === User Specific / Custom ===
+# xfye
+.qsyncclient/
+data/
+*.pkl
+
+# === IDEs / Editors ===
+# VSCode
+.vscode/
+# PyCharm / IntelliJ
+.idea/
+# Spyder
+.spyderproject
+.spyproject
+# Rope
+.ropeproject
+
+# === Python Bytecode & Cache ===
+# Compiled Python modules and cache directories
+**/__pycache__/
+*.py[cod]
+*.pyc
+
+# === Virtual Environments ===
+# Common virtual environment directories
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# === Distribution / Packaging ===
+# Setuptools, distutils, wheels, eggs
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+sdist/
+# PyInstaller build files
+*.spec
+*.manifest
+
+# === Testing & Coverage ===
+# Test runners and coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# === Framework Specific ===
+# Django
+*.log
+local_settings.py
+db.sqlite3* # Ignore SQLite database and related files (like journals)
+
+# Flask
+instance/ # Instance folder typically contains sensitive config or DBs
+.webassets-cache # Flask-Assets cache
+
+# === Notebooks ===
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# === Documentation ===
+# Sphinx build output
+docs/_build/
+# MkDocs build output
+site/
+
+# === Type Checking ===
+# mypy cache
+.mypy_cache/
+
+# === OS Generated Files ===
+# Windows thumbnail cache and desktop config
+Thumbs.db
+desktop.ini
+# macOS custom folder attributes
+.DS_Store
+
+# 忽略本地配置和缓存
+config.json
