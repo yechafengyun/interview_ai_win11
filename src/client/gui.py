@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
     QKeySequenceEdit,
     QSizePolicy,
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 import keyboard
 from PIL import ImageGrab
 import io
@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
         voice_layout.addWidget(QLabel("Voice Recognition:"))
         self.voice_hotkey_input = QKeySequenceEdit()
         self.voice_hotkey_input.setKeySequence(self.config.hotkey_voice)
-        self.voice_hotkey_input.keySequenceChanged.connect(self.update_voice_hotkey)
+        self.voice_hotkey_input.editingFinished.connect(self.update_voice_hotkey)
         voice_layout.addWidget(self.voice_hotkey_input)
         hotkey_layout.addLayout(voice_layout)
 
@@ -222,9 +222,7 @@ class MainWindow(QMainWindow):
         screenshot_layout.addWidget(QLabel("Screenshot Recognition:"))
         self.screenshot_hotkey_input = QKeySequenceEdit()
         self.screenshot_hotkey_input.setKeySequence(self.config.hotkey_screenshot)
-        self.screenshot_hotkey_input.keySequenceChanged.connect(
-            self.update_screenshot_hotkey
-        )
+        self.screenshot_hotkey_input.editingFinished.connect(self.update_screenshot_hotkey)
         screenshot_layout.addWidget(self.screenshot_hotkey_input)
         hotkey_layout.addLayout(screenshot_layout)
 
@@ -258,13 +256,17 @@ class MainWindow(QMainWindow):
 
         tabs.addTab(settings_tab, "Settings")
 
-    def update_voice_hotkey(self, key_sequence):
-        self.config.hotkey_voice = key_sequence.toString()
+    def update_voice_hotkey(self):
+        key_seq = self.voice_hotkey_input.keySequence().toString()
+        self.voice_hotkey = key_seq
+        self.config.hotkey_voice = key_seq
         self.save_settings()
         self.setup_hotkeys()
 
-    def update_screenshot_hotkey(self, key_sequence):
-        self.config.hotkey_screenshot = key_sequence.toString()
+    def update_screenshot_hotkey(self):
+        key_seq = self.screenshot_hotkey_input.keySequence().toString()
+        self.screenshot_hotkey = key_seq
+        self.config.hotkey_screenshot = key_seq
         self.save_settings()
         self.setup_hotkeys()
 
@@ -327,14 +329,29 @@ class MainWindow(QMainWindow):
         self.output_text.clear()
 
     def setup_hotkeys(self):
+        # 只注册非空的快捷键
         try:
-            keyboard.remove_hotkey(self.config.hotkey_voice)
-            keyboard.remove_hotkey(self.config.hotkey_screenshot)
-        except:
+            if hasattr(self, 'voice_hotkey') and self.voice_hotkey:
+                keyboard.remove_hotkey(self.voice_hotkey)
+        except Exception:
             pass
-
-        keyboard.add_hotkey(self.config.hotkey_voice, self.capture_caption)
-        keyboard.add_hotkey(self.config.hotkey_screenshot, self.capture_image)
+        try:
+            if hasattr(self, 'screenshot_hotkey') and self.screenshot_hotkey:
+                keyboard.remove_hotkey(self.screenshot_hotkey)
+        except Exception:
+            pass
+        if getattr(self, 'voice_hotkey', None):
+            if self.voice_hotkey.strip():
+                keyboard.add_hotkey(
+                    self.voice_hotkey,
+                    lambda: QTimer.singleShot(0, self.capture_caption)
+                )
+        if getattr(self, 'screenshot_hotkey', None):
+            if self.screenshot_hotkey.strip():
+                keyboard.add_hotkey(
+                    self.screenshot_hotkey,
+                    lambda: QTimer.singleShot(0, self.capture_image)
+                )
 
     def launch_live_captions(self):
         try:
@@ -377,7 +394,6 @@ class MainWindow(QMainWindow):
                 full_text = child_window.texts()[0].strip()
                 if full_text:
                     self.input_text.setPlainText(full_text)
-
                     client = OpenAI(
                         api_key=self.config.api_key, base_url=self.config.base_url
                     )
