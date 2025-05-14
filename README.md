@@ -16,6 +16,13 @@ This tool is based on Windows LiveCaptions, which is available since Windows 11 
 
 
 ## AI大模型配置
+> ⚠️ **警告**: 为了获得更快的响应速度，建议优先使用轻量级模型，如:
+> - qwen-turbo-latest (推荐)
+> - qwen-vl-plus-latest (推荐)
+> - gpt-3.5-turbo
+> - 大规模模型(如qwen-max、gpt-4等)虽然效果更好，但响应速度会明显变慢。请根据实际需求权衡选择。
+
+
 - 模板使用**阿里云**(新注册赠送大量Token)，[如何获取API Key](https://help.aliyun.com/zh/model-studio/developer-reference/get-api-key)
 [KIMI API](https://platform.moonshot.cn/docs/guide/start-using-kimi-api)  
 - **硅基流动**（[官网链接](https://cloud.siliconflow.cn/i/VDi0mdMO)）获取`API_KEY`，新用户受邀可获取14元额度（邀请码`VDi0mdMO`），足够用一段时间了（此时，模型名称格式为deepseek-ai/DeepSeek-R1, deepseek-ai/deepseek-vl2形式）
