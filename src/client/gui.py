@@ -256,19 +256,82 @@ class MainWindow(QMainWindow):
 
         tabs.addTab(settings_tab, "Settings")
 
+    def try_register_hotkey(self, hotkey, callback):
+        try:
+            if hotkey and hotkey.strip():
+                keyboard.add_hotkey(hotkey, callback)
+                return True
+        except Exception as e:
+            print(f"注册快捷键失败: {hotkey}, 错误: {e}")
+        return False
+
+    def setup_hotkeys(self):
+        # 注册 voice_hotkey
+        hotkey = self.config.hotkey_voice
+        if not self.try_register_hotkey(hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+            default_hotkey = self.config.DEFAULT_CONFIG["hotkey_voice"]
+            if self.try_register_hotkey(default_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+                self.config.hotkey_voice = default_hotkey
+                self.voice_hotkey_input.setKeySequence(default_hotkey)
+                self.config.save_config()
+        # 注册 screenshot_hotkey
+        hotkey = self.config.hotkey_screenshot
+        if not self.try_register_hotkey(hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+            default_hotkey = self.config.DEFAULT_CONFIG["hotkey_screenshot"]
+            if self.try_register_hotkey(default_hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+                self.config.hotkey_screenshot = default_hotkey
+                self.screenshot_hotkey_input.setKeySequence(default_hotkey)
+                self.config.save_config()
+
     def update_voice_hotkey(self):
-        key_seq = self.voice_hotkey_input.keySequence().toString()
-        self.voice_hotkey = key_seq
-        self.config.hotkey_voice = key_seq
-        self.save_settings()
-        self.setup_hotkeys()
+        new_hotkey = self.voice_hotkey_input.keySequence().toString()
+        old_hotkey = self.config.hotkey_voice
+        if new_hotkey and new_hotkey.strip():
+            if self.try_register_hotkey(new_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+                # 新的注册成功，移除旧的
+                try:
+                    if old_hotkey and old_hotkey.strip():
+                        keyboard.remove_hotkey(old_hotkey)
+                except Exception:
+                    pass
+                self.config.hotkey_voice = new_hotkey
+                self.save_settings()
+            else:
+                # 注册失败，恢复旧值
+                self.voice_hotkey_input.setKeySequence(old_hotkey)
+                # 可弹窗提示
+        else:
+            # 清空时移除旧的
+            try:
+                if old_hotkey and old_hotkey.strip():
+                    keyboard.remove_hotkey(old_hotkey)
+            except Exception:
+                pass
+            self.config.hotkey_voice = ""
+            self.save_settings()
 
     def update_screenshot_hotkey(self):
-        key_seq = self.screenshot_hotkey_input.keySequence().toString()
-        self.screenshot_hotkey = key_seq
-        self.config.hotkey_screenshot = key_seq
-        self.save_settings()
-        self.setup_hotkeys()
+        new_hotkey = self.screenshot_hotkey_input.keySequence().toString()
+        old_hotkey = self.config.hotkey_screenshot
+        if new_hotkey and new_hotkey.strip():
+            if self.try_register_hotkey(new_hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+                try:
+                    if old_hotkey and old_hotkey.strip():
+                        keyboard.remove_hotkey(old_hotkey)
+                except Exception:
+                    pass
+                self.config.hotkey_screenshot = new_hotkey
+                self.save_settings()
+            else:
+                self.screenshot_hotkey_input.setKeySequence(old_hotkey)
+        else:
+            try:
+                if old_hotkey and old_hotkey.strip():
+                    keyboard.remove_hotkey(old_hotkey)
+            except Exception:
+                pass
+            self.config.hotkey_screenshot = ""
+            self.save_settings()
 
     def save_settings(self):
         self.config.api_key = (
@@ -327,31 +390,6 @@ class MainWindow(QMainWindow):
         self.cleanup_worker()
         self.input_text.clear()
         self.output_text.clear()
-
-    def setup_hotkeys(self):
-        # 只注册非空的快捷键
-        try:
-            if hasattr(self, 'voice_hotkey') and self.voice_hotkey:
-                keyboard.remove_hotkey(self.voice_hotkey)
-        except Exception:
-            pass
-        try:
-            if hasattr(self, 'screenshot_hotkey') and self.screenshot_hotkey:
-                keyboard.remove_hotkey(self.screenshot_hotkey)
-        except Exception:
-            pass
-        if getattr(self, 'voice_hotkey', None):
-            if self.voice_hotkey.strip():
-                keyboard.add_hotkey(
-                    self.voice_hotkey,
-                    lambda: QTimer.singleShot(0, self.capture_caption)
-                )
-        if getattr(self, 'screenshot_hotkey', None):
-            if self.screenshot_hotkey.strip():
-                keyboard.add_hotkey(
-                    self.screenshot_hotkey,
-                    lambda: QTimer.singleShot(0, self.capture_image)
-                )
 
     def launch_live_captions(self):
         try:
