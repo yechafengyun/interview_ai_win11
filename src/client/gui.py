@@ -222,7 +222,9 @@ class MainWindow(QMainWindow):
         screenshot_layout.addWidget(QLabel("Screenshot Recognition:"))
         self.screenshot_hotkey_input = QKeySequenceEdit()
         self.screenshot_hotkey_input.setKeySequence(self.config.hotkey_screenshot)
-        self.screenshot_hotkey_input.editingFinished.connect(self.update_screenshot_hotkey)
+        self.screenshot_hotkey_input.editingFinished.connect(
+            self.update_screenshot_hotkey
+        )
         screenshot_layout.addWidget(self.screenshot_hotkey_input)
         hotkey_layout.addLayout(screenshot_layout)
 
@@ -268,17 +270,25 @@ class MainWindow(QMainWindow):
     def setup_hotkeys(self):
         # 注册 voice_hotkey
         hotkey = self.config.hotkey_voice
-        if not self.try_register_hotkey(hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+        if not self.try_register_hotkey(
+            hotkey, lambda: QTimer.singleShot(0, self.capture_caption)
+        ):
             default_hotkey = self.config.DEFAULT_CONFIG["hotkey_voice"]
-            if self.try_register_hotkey(default_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+            if self.try_register_hotkey(
+                default_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)
+            ):
                 self.config.hotkey_voice = default_hotkey
                 self.voice_hotkey_input.setKeySequence(default_hotkey)
                 self.config.save_config()
         # 注册 screenshot_hotkey
         hotkey = self.config.hotkey_screenshot
-        if not self.try_register_hotkey(hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+        if not self.try_register_hotkey(
+            hotkey, lambda: QTimer.singleShot(0, self.capture_image)
+        ):
             default_hotkey = self.config.DEFAULT_CONFIG["hotkey_screenshot"]
-            if self.try_register_hotkey(default_hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+            if self.try_register_hotkey(
+                default_hotkey, lambda: QTimer.singleShot(0, self.capture_image)
+            ):
                 self.config.hotkey_screenshot = default_hotkey
                 self.screenshot_hotkey_input.setKeySequence(default_hotkey)
                 self.config.save_config()
@@ -287,7 +297,9 @@ class MainWindow(QMainWindow):
         new_hotkey = self.voice_hotkey_input.keySequence().toString()
         old_hotkey = self.config.hotkey_voice
         if new_hotkey and new_hotkey.strip():
-            if self.try_register_hotkey(new_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)):
+            if self.try_register_hotkey(
+                new_hotkey, lambda: QTimer.singleShot(0, self.capture_caption)
+            ):
                 # 新的注册成功，移除旧的
                 try:
                     if old_hotkey and old_hotkey.strip():
@@ -314,7 +326,9 @@ class MainWindow(QMainWindow):
         new_hotkey = self.screenshot_hotkey_input.keySequence().toString()
         old_hotkey = self.config.hotkey_screenshot
         if new_hotkey and new_hotkey.strip():
-            if self.try_register_hotkey(new_hotkey, lambda: QTimer.singleShot(0, self.capture_image)):
+            if self.try_register_hotkey(
+                new_hotkey, lambda: QTimer.singleShot(0, self.capture_image)
+            ):
                 try:
                     if old_hotkey and old_hotkey.strip():
                         keyboard.remove_hotkey(old_hotkey)
@@ -456,6 +470,15 @@ class MainWindow(QMainWindow):
             self.cleanup_worker()
 
             image = ImageGrab.grabclipboard()
+            if isinstance(image, list):
+                # 可能是文件路径列表，尝试打开第一个文件
+                from PIL import Image
+
+                if image and isinstance(image[0], str):
+                    image = Image.open(image[0])
+                else:
+                    image = None
+
             if not image:
                 image = ImageGrab.grab()
 
